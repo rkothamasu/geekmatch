@@ -5,20 +5,32 @@ import { SwipeCard } from '@/components/swipe-card';
 import { getDiscoverProfiles, submitSwipe } from '@/lib/actions/matching';
 import { Loader2 } from 'lucide-react';
 
+interface Profile {
+  clerkId: string;
+  name: string;
+  bio: string | null;
+  imageUrl: string | null;
+}
+
 export default function DiscoverPage() {
-  const [profiles, setProfiles] = useState<any[]>([]);
+  const [profiles, setProfiles] = useState<Profile[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    let isMounted = true;
+    async function loadProfiles() {
+      setLoading(true);
+      const data = await getDiscoverProfiles();
+      if (isMounted) {
+        setProfiles(data as Profile[]);
+        setLoading(false);
+      }
+    }
     loadProfiles();
+    return () => {
+      isMounted = false;
+    };
   }, []);
-
-  async function loadProfiles() {
-    setLoading(true);
-    const data = await getDiscoverProfiles();
-    setProfiles(data);
-    setLoading(false);
-  }
 
   async function handleSwipe(isLike: boolean, swipedId: string) {
     const nextProfiles = [...profiles];
@@ -26,6 +38,11 @@ export default function DiscoverPage() {
     setProfiles(nextProfiles);
 
     const result = await submitSwipe(swipedId, isLike);
+    if (!result.success) {
+      alert(`Error: ${result.error}`);
+      return;
+    }
+
     if (result.match) {
       alert("It's a match!"); // Simple alert for MVP
     }

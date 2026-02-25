@@ -16,7 +16,6 @@ interface SwipeCardProps {
 
 export function SwipeCard({ profile, onSwipe }: SwipeCardProps) {
   const [leaveX, setLeaveX] = useState(0);
-  const [leaveY, setLeaveY] = useState(0);
 
   const handleDragEnd = (event: MouseEvent | TouchEvent | PointerEvent, info: PanInfo) => {
     const threshold = 100;
@@ -34,7 +33,7 @@ export function SwipeCard({ profile, onSwipe }: SwipeCardProps) {
       drag="x"
       dragConstraints={{ left: 0, right: 0 }}
       onDragEnd={handleDragEnd}
-      animate={{ x: leaveX, y: leaveY, opacity: leaveX ? 0 : 1 }}
+      animate={{ x: leaveX, opacity: leaveX ? 0 : 1 }}
       transition={{ duration: 0.3 }}
       className="absolute w-full h-[500px]"
     >

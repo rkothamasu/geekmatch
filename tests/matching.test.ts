@@ -22,6 +22,7 @@ vi.mock('@/db', () => {
           findMany: vi.fn(),
         },
         matches: {
+          findFirst: vi.fn(),
           findMany: vi.fn(),
         },
         users: {
@@ -34,30 +35,59 @@ vi.mock('@/db', () => {
 
 describe('Matching Logic', () => {
   beforeEach(() => {
-    vi.clearAllMocks();
+    vi.resetAllMocks();
   });
 
   test('records a swipe and returns no match if swipe is dislike', async () => {
-    (db.query.swipes.findFirst as any).mockResolvedValueOnce(null);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (db.query.swipes.findFirst as any).mockResolvedValueOnce(null); // No existing swipe
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (db.query.swipes.findFirst as any).mockResolvedValueOnce(null); // No reciprocal like
+    
     const result = await submitSwipe('user_2', false);
     
     expect(db.insert).toHaveBeenCalled();
+    expect(result.success).toBe(true);
     expect(result.match).toBe(false);
   });
 
   test('records a swipe and returns no match if reciprocal like not found', async () => {
-    (db.query.swipes.findFirst as any).mockResolvedValueOnce(null);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (db.query.swipes.findFirst as any).mockResolvedValueOnce(null); // No existing swipe
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (db.query.swipes.findFirst as any).mockResolvedValueOnce(null); // No reciprocal like
+    
     const result = await submitSwipe('user_2', true);
     
     expect(db.insert).toHaveBeenCalled();
+    expect(result.success).toBe(true);
     expect(result.match).toBe(false);
   });
 
   test('creates a match when reciprocal like is found', async () => {
-    (db.query.swipes.findFirst as any).mockResolvedValueOnce({ id: 'swipe_id', isLike: true });
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (db.query.swipes.findFirst as any).mockResolvedValueOnce(null); // No existing swipe
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (db.query.swipes.findFirst as any).mockResolvedValueOnce({ id: 'swipe_id', isLike: true }); // Reciprocal like found
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (db.query.matches.findFirst as any).mockResolvedValueOnce(null); // No existing match
+    
     const result = await submitSwipe('user_2', true);
     
     expect(db.insert).toHaveBeenCalledTimes(2); // One for swipe, one for match
+    expect(result.success).toBe(true);
     expect(result.match).toBe(true);
+  });
+
+  test('returns duplicate if user already swiped', async () => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (db.query.swipes.findFirst as any).mockResolvedValueOnce({ id: 'existing_id' }); // Existing swipe
+    
+    const result = await submitSwipe('user_2', true);
+    
+    expect(db.insert).not.toHaveBeenCalled();
+    expect(result.success).toBe(true);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    expect((result as any).duplicate).toBe(true);
   });
 });
