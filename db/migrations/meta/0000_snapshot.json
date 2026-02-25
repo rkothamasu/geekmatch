@@ -1,0 +1,260 @@
+{
+  "id": "dba94298-afd1-4fe1-ac02-8137e66d5d5b",
+  "prevId": "00000000-0000-0000-0000-000000000000",
+  "version": "7",
+  "dialect": "postgresql",
+  "tables": {
+    "public.matches": {
+      "name": "matches",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "user1_id": {
+          "name": "user1_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "user2_id": {
+          "name": "user2_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "idx_matches_user1_user2": {
+          "name": "idx_matches_user1_user2",
+          "columns": [
+            {
+              "expression": "user1_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "user2_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "matches_user1_id_users_clerk_id_fk": {
+          "name": "matches_user1_id_users_clerk_id_fk",
+          "tableFrom": "matches",
+          "tableTo": "users",
+          "columnsFrom": [
+            "user1_id"
+          ],
+          "columnsTo": [
+            "clerk_id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "matches_user2_id_users_clerk_id_fk": {
+          "name": "matches_user2_id_users_clerk_id_fk",
+          "tableFrom": "matches",
+          "tableTo": "users",
+          "columnsFrom": [
+            "user2_id"
+          ],
+          "columnsTo": [
+            "clerk_id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.swipes": {
+      "name": "swipes",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "swiper_id": {
+          "name": "swiper_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "swiped_id": {
+          "name": "swiped_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "is_like": {
+          "name": "is_like",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "idx_swipes_swiper_swiped": {
+          "name": "idx_swipes_swiper_swiped",
+          "columns": [
+            {
+              "expression": "swiper_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "swiped_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "swipes_swiper_id_users_clerk_id_fk": {
+          "name": "swipes_swiper_id_users_clerk_id_fk",
+          "tableFrom": "swipes",
+          "tableTo": "users",
+          "columnsFrom": [
+            "swiper_id"
+          ],
+          "columnsTo": [
+            "clerk_id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "swipes_swiped_id_users_clerk_id_fk": {
+          "name": "swipes_swiped_id_users_clerk_id_fk",
+          "tableFrom": "swipes",
+          "tableTo": "users",
+          "columnsFrom": [
+            "swiped_id"
+          ],
+          "columnsTo": [
+            "clerk_id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.users": {
+      "name": "users",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "clerk_id": {
+          "name": "clerk_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "name": {
+          "name": "name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "bio": {
+          "name": "bio",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "image_url": {
+          "name": "image_url",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "users_clerk_id_unique": {
+          "name": "users_clerk_id_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "clerk_id"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    }
+  },
+  "enums": {},
+  "schemas": {},
+  "sequences": {},
+  "roles": {},
+  "policies": {},
+  "views": {},
+  "_meta": {
+    "columns": {},
+    "schemas": {},
+    "tables": {}
+  }
+}
